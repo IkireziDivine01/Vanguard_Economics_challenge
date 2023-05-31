@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js/dist/chart.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <title>Financial Inclusion App - Search Results</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    
+        h1, h2 {
+            color: #219ebc;
+            text-align: center;
+        }
+         table {
+        width: 60%;
+        border-collapse: collapse;
+        margin-left: 15em;
+        margin-bottom: 4em;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+    a{
+        border: 2px solid #219ebc;
+        background-color: #219ebc;
+        border-radius: 4px;
+        padding: 8px;
+        color: #fff;
+        text-decoration: none;
+    }
+    .headerDiv{
+        display: flex;
+        align-items: center;
+        margin-bottom: 2em;
+        gap: 90px;
+    }
+    .chart{
+        margin-left: 15em;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="headerDiv">
+        <a href="/">Back to homepage</a>
+        <h1>Financial Inclusion App - Search Results</h1>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Indicator</th>
+                <th>Year</th>
+                <th>Percentage Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each results}}
+            <tr>
+                <td>{{name}}</td>
+                <td>{{year}}</td>
+                <td>{{percentage_value}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    <div class="chart">
+        <canvas id="search-results-chart" width="600" height="300"></canvas>
+    </div>
+    
+    <script>
+        const results = {{{ json results }}};
+        const ctx = document.getElementById('search-results-chart').getContext('2d');
+
+        // Process the data to create chart-ready datasets
+       const processedData = results.reduce((acc, entry) => {
+            if (!acc.labels.includes(entry.year)) {
+                acc.labels.push(entry.year);
+            }
+            if (!acc.indicators[entry.name]) {
+                acc.indicators[entry.name] = {
+                    borderColor: '#' + Math.floor(Math.random() * 16777215).toString(16),
+                    data: []
+                };
+            }
+            acc.indicators[entry.name].data.push({ x: entry.year, y: entry.percentage_value });
+            return acc;
+        }, { labels: [], indicators: {} });
+
+        const labels = processedData.labels.sort((a, b) => a - b);
+        const datasets = Object.entries(processedData.indicators).map(([name, indicator]) => {
+            return {
+                label: name,
+                data: indicator.data.sort((a, b) => a.x - b.x),
+                fill: false,
+                borderColor: indicator.borderColor,
+                tension: 0.1
+            };
+        });
+
+        const chartData = {
+            labels: labels,
+            datasets: datasets
+        };
+
+        const chartConfig = {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: false,
+                scales: {
+                    x: {
+                        display: true,
+                        title: {
+                            text: 'Year'
+                        }
+                    },
+                    y: {
+                        display: true,
+                        title: {
+                            text: 'Percentage Value'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        new Chart(ctx, chartConfig);
+    </script>
+
+</body>
+
+</html>

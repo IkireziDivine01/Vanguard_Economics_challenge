@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Inclusion App</title>
+    <style>
+        body{
+            font-family: 'Roboto', sans-serif;
+        }
+        h1, h2{
+            color: #219ebc;
+            text-align: center;
+        }
+        input {
+            padding: 12px 20px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            margin-left: 30rem;
+        }
+        button {
+            background-color: #219ebc;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        li{
+            list-style-type: circle;
+            margin-left: 30rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Financial Inclusion App</h1>
+    <form action="/search" method="POST">
+        <input type="text" name="searchTerm" placeholder="Search indicators" required>
+        <button type="submit">Search</button>
+    </form>
+    <h2>All Indicators</h2>
+    <ul>
+        {{#each indicators}}
+        <li>{{name}}</li>
+        {{/each}}
+    </ul>
+</body>
+
+</html>
